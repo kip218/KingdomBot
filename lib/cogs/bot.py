@@ -57,6 +57,20 @@ class Bot(Cog):
         await ctx.send(embed=embed)
 
 
+    @command()
+    async def invite(self, ctx):
+        '''
+        Get invite link for KingdomBot.
+        '''
+        title = 'Invite Link'
+        description = 'Click the link below to invite KingdomBot to your server.'
+        url = self.bot.BOT_INVITE_URL
+        avatar_url = self.bot.user.avatar_url
+        embed = Embed(title=title, url=url)\
+                .set_author(name=description, icon_url=avatar_url)
+        await ctx.send(embed=embed)
+
+
     @Cog.listener()
     async def on_ready(self):
         print(self.__class__.__name__, 'cog ready')

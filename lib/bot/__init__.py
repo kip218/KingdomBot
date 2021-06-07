@@ -15,14 +15,17 @@ from settings import TOKEN
 
 
 PREFIX = "k!"
+BOT_INVITE_URL = "https://discord.com/api/oauth2/authorize?client_id=851391820834406400&permissions=354368&scope=bot"
 OWNER_IDS = [161774631303249921]
 IGNORE_EXCEPTIONS = (CommandNotFound, BadArgument)
 COGS_PATH = [path.replace('/','.')[2:-3] for path in glob("./lib/cogs/*.py")]
 
 
+
 class Bot(BotBase):
     def __init__(self):
         self.PREFIX = PREFIX
+        self.BOT_INVITE_URL = BOT_INVITE_URL
         self.ready = False
         self.scheduler = AsyncIOScheduler()
 

@@ -39,10 +39,12 @@ class Basic(Cog):
         title = kingdom_name
         color = user.color
         icon_url = kingdom_emblem
+        avatar_url = ctx.author.avatar_url
         embed = Embed(title=title, color=color)\
                         .set_thumbnail(url=icon_url)\
                         .add_field(name=':coin:Balance', value=f'{balance} coins')\
-                        .set_footer(text=f"{user}'s kingdom")
+                        .set_footer(text=f"{user}'s Kingdom")\
+                        .set_author(name=user, icon_url=avatar_url)
         await ctx.send(embed=embed)
 
 
