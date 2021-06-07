@@ -1,0 +1,4 @@
+apscheduler
+discord.py
+python-dotenv
+psycopg2-binary
