@@ -50,6 +50,25 @@ class Bot(BotBase):
         super().run(self.TOKEN)
 
 
+    def is_command(self, msg):
+        content = msg.content
+        cmd_lst = [cmd.name for cmd in self.commands]
+        return content.startswith(self.PREFIX) and content[len(self.PREFIX):].split(' ')[0] in cmd_lst
+
+
+    def format_log(self, msg):
+        user_name = msg.author.name
+        content = msg.clean_content
+        channel = msg.channel
+        if isinstance(channel, TextChannel):
+            channel_name = channel.name
+            server_name = msg.guild.name
+        elif isinstance(channel, DMChannel):
+            channel_name = channel.recipient.name
+            server_name = "DMChannel"
+        return server_name + "| " + channel_name + "| " + user_name + ": " + content
+
+
     async def on_connect(self):
         print("bot connected")
 
@@ -93,19 +112,22 @@ class Bot(BotBase):
             print("bot reconnected")
 
 
-    async def on_message(self, message):
-        if not message.author.bot:
-            await self.process_commands(message)
+    async def on_message(self, msg):
         #logging
-        user = message.author.name
-        msg = message.clean_content
-        if isinstance(message.channel, TextChannel):
-            channel = message.channel.name
-            server = message.guild.name
-        elif isinstance(message.channel, DMChannel):
-            channel = message.channel.recipient.name
-            server = "DMChannel"
-        print(server + "| " + channel + "| " + user + ": " + msg)
+        print(self.format_log(msg))
+        #if user calls command but not in database
+        userID = msg.author.id
+        channel = msg.channel
+        if self.is_command(msg) and not db.user_exists(userID):
+            await channel.send(f"You have not started a Kingdom yet! Use {self.PREFIX}start to get started!")
+        else:
+            print("processing command...")
+            await self.process_commands(msg)
+
+
+    async def on_command(self, ctx):
+        if not db.user_exists(ctx.message.author.id):
+            await ctx.send(f"You have not started a Kingdom yet! Use {self.PREFIX}start to get started!")
 
 
 bot = Bot()

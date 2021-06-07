@@ -15,7 +15,7 @@ class Basic(Cog):
         '''
         Start your kingdom!
         '''
-        if db.user_in_database(ctx.message.author.id):
+        if db.user_exists(ctx.message.author.id):
             await ctx.send("You have already started a Kingdom!")
             return
 
@@ -26,15 +26,11 @@ class Basic(Cog):
         await ctx.send("Welcome to your Kingdom!")
 
 
-    @command(aliases=['profile','balance'])
+    @command(aliases=['profile','balance','base','info'])
     async def kingdom(self, ctx):
         '''
         Shows your kingdom.
         '''
-        if not db.user_in_database(ctx.message.author.id):
-            await ctx.send(f"You have not started a Kingdom yet! Use {self.bot.command_prefix}start to get started!")
-            return
-
         balance, kingdom_name, kingdom_emblem = \
                 db.record("SELECT Balance, KingdomName, KingdomEmblem\
                            FROM users WHERE UserID = %s", ctx.message.author.id)

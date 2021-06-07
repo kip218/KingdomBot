@@ -1,4 +1,4 @@
-from random import choices
+from random import choices, randint
 
 class MontyHall():
     def __init__(self):
@@ -16,6 +16,8 @@ class MontyHall():
         self.x_emote = ':x:'
         self.package_emote = ':package:'
         self.arrow_emote = ':arrow_down:'
+
+        self.payment = randint(10, 20)
 
 
     def display(self):
@@ -68,3 +70,7 @@ class MontyHall():
     def reveal_all(self):
         for pkg in self.options.values():
             pkg['is_open'] = True
+
+
+    def payment(self):
+        return self.payment

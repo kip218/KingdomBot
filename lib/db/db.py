@@ -79,5 +79,21 @@ def scriptexec(path):
 Specific commands
 """
 # check if userID in database
-def user_in_database(userID):
+def user_exists(userID):
     return bool(record("SELECT UserID FROM users WHERE UserID = %s", userID))
+
+
+def get_balance(userID):
+    return field("SELECT Balance FROM users WHERE UserID = %s", userID)
+
+
+def add_balance(userID, amount):
+    execute("UPDATE users SET Balance = Balance + %s WHERE UserID = %s", amount, userID)
+
+
+def deduct_balance(userID, amount):
+    curr_bal = get_balance(userID)
+    if curr_bal < amount:
+        return False
+    else:
+        execute("UPDATE users SET Balance = Balance - %s WHERE UserID = %s", amount, userID)
