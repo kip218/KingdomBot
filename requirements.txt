@@ -3,3 +3,4 @@ discord.py
 python-dotenv
 psycopg2-binary
 random_word
+pyyaml
