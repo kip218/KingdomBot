@@ -15,15 +15,15 @@ class Basic(Cog):
         '''
         Start your kingdom!
         '''
+        if db.user_in_database(ctx.message.author.id):
+            await ctx.send("You have already started a Kingdom!")
+            return
+
         userID= ctx.message.author.id
         username = ctx.message.author.name
-        already_started = db.record("SELECT UserID FROM users WHERE UserID = %s", userID)
-        if already_started:
-            await ctx.send("You have already started a Kingdom!")
-        else:
-            db.execute("INSERT INTO users (UserID, Username) VALUES (%s, %s) ON CONFLICT (UserID) DO NOTHING;",
-                            userID, username)
-            await ctx.send("Welcome to your Kingdom!")
+        db.execute("INSERT INTO users (UserID, Username) VALUES (%s, %s) ON CONFLICT (UserID) DO NOTHING;",
+                        userID, username)
+        await ctx.send("Welcome to your Kingdom!")
 
 
     @command(aliases=['profile','balance'])
@@ -31,6 +31,10 @@ class Basic(Cog):
         '''
         Shows your kingdom.
         '''
+        if not db.user_in_database(ctx.message.author.id):
+            await ctx.send(f"You have not started a Kingdom yet! Use {self.bot.command_prefix}start to get started!")
+            return
+
         balance, kingdom_name, kingdom_emblem = \
                 db.record("SELECT Balance, KingdomName, KingdomEmblem\
                            FROM users WHERE UserID = %s", ctx.message.author.id)

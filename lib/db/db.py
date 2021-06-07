@@ -73,3 +73,11 @@ def execute(command, *values):
 def scriptexec(path):
     with open(path, 'r', encoding='utf-8') as script:
         cur.execute(script.read())
+
+
+"""
+Specific commands
+"""
+# check if userID in database
+def user_in_database(userID):
+    return bool(record("SELECT UserID FROM users WHERE UserID = %s", userID))
