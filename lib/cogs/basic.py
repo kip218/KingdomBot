@@ -1,6 +1,7 @@
 from discord.ext.commands import Cog
 from discord.ext.commands import command
-from discord import Embed
+from discord import Embed, Emoji
+from typing import Union
 
 from ..db import db
 
@@ -35,14 +36,40 @@ class Basic(Cog):
                 db.record("SELECT Balance, KingdomName, KingdomEmblem\
                            FROM users WHERE UserID = %s", ctx.message.author.id)
         user = ctx.message.author
-        title = f'{kingdom_emblem} {kingdom_name} {kingdom_emblem}'
+        title = kingdom_name
         color = user.color
-        icon_url = user.avatar_url
+        icon_url = kingdom_emblem
         embed = Embed(title=title, color=color)\
                         .set_thumbnail(url=icon_url)\
-                        .add_field(name='Coins', value=balance)\
+                        .add_field(name=':coin:Balance', value=f'{balance} coins')\
                         .set_footer(text=f"{user}'s kingdom")
         await ctx.send(embed=embed)
+
+
+    @command(usage="<kingdom name>")
+    async def kingdomname(self, ctx, *, kingdom_name:str):
+        '''
+        Change your Kingdom name.
+        '''
+        if len(kingdom_name) > 40:
+            await ctx.send("Kingdom names must be shorter than 40 characters!")
+            return
+        userID = ctx.author.id
+        db.change_kingdom_name(userID, kingdom_name)
+        await ctx.send(f"Your Kingdom name has been changed to {kingdom_name}.")
+
+
+    @command(usage="<custom emoji>")
+    async def emblem(self, ctx, kingdom_emblem:Union[Emoji, str]):
+        '''
+        Change your Kingdom Emblem.
+        '''
+        if isinstance(kingdom_emblem, str):
+            await ctx.send("This command only takes <custom emoji> as an argument!")
+            return
+        userID = ctx.author.id
+        db.change_kingdom_emblem(userID, str(kingdom_emblem.url))
+        await ctx.send(f"Your Kingdom emblem has been changed to {kingdom_emblem}.")
 
 
     @Cog.listener()

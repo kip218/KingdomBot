@@ -78,7 +78,6 @@ def scriptexec(path):
 """
 Specific commands
 """
-# check if userID in database
 def user_exists(userID):
     return bool(record("SELECT UserID FROM users WHERE UserID = %s", userID))
 
@@ -97,3 +96,11 @@ def deduct_balance(userID, amount):
         return False
     else:
         execute("UPDATE users SET Balance = Balance - %s WHERE UserID = %s", amount, userID)
+
+
+def change_kingdom_name(userID, kingdom_name):
+    execute("UPDATE users SET KingdomName = %s WHERE UserID = %s", kingdom_name, userID)
+
+
+def change_kingdom_emblem(userID, kingdom_emblem):
+    execute("UPDATE users SET KingdomEmblem = %s WHERE UserID = %s", kingdom_emblem, userID)

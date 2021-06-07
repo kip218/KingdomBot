@@ -56,6 +56,10 @@ class Bot(BotBase):
         return content.startswith(self.PREFIX) and content[len(self.PREFIX):].split(' ')[0] in cmd_lst
 
 
+    def is_start_command(self, msg):
+        return msg.content[len(self.PREFIX):].split(' ')[0] == 'start'
+
+
     def format_log(self, msg):
         user_name = msg.author.name
         content = msg.clean_content
@@ -118,7 +122,7 @@ class Bot(BotBase):
         #if user calls command but not in database
         userID = msg.author.id
         channel = msg.channel
-        if self.is_command(msg) and not db.user_exists(userID):
+        if self.is_command(msg) and not self.is_start_command(msg) and not db.user_exists(userID):
             await channel.send(f"You have not started a Kingdom yet! Use {self.PREFIX}start to get started!")
         else:
             print("processing command...")

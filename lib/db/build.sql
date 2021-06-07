@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     Username text,
     Balance bigint DEFAULT 0,
     KingdomName text DEFAULT 'Kingdom',
-    KingdomEmblem text DEFAULT ':european_castle:',
+    KingdomEmblem text DEFAULT 'https://cdn.discordapp.com/emojis/851545024901546054.png',
     Army text[][],
     MobilizedArmy text[][],
     Defense text[][],
