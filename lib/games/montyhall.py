@@ -72,5 +72,5 @@ class MontyHall():
             pkg['is_open'] = True
 
 
-    def payment(self):
+    def get_payment(self):
         return self.payment

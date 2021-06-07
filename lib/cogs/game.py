@@ -51,7 +51,7 @@ class Game(Cog):
         else:
             m.reveal_all()
             if m.guess == m.coin:
-                payment = m.payment()
+                payment = m.get_payment()
                 db.add_balance(ctx.author.id, payment)
                 await msg.edit(content=f"You found the coin! You won {payment} coins.\n\n{m.display()}")
             else:
