@@ -74,6 +74,45 @@ class Basic(Cog):
         await ctx.send(f"Your Kingdom emblem has been changed to {kingdom_emblem}.")
 
 
+    @command(usage='<user.mention> <amount>', aliases=['give'])
+    async def pay(self, ctx, user, amount:int=None):
+        '''
+        Pay another user <amount> of coins.
+        '''
+        if len(ctx.message.mentions) == 0:
+            await ctx.send("You must mention a user to pay!")
+            return
+
+        if amount is None:
+            await ctx.send("You must specify the amount of payment!")
+            return
+
+        if amount <= 0:
+            await ctx.send("Payment amount must be positive!")
+            return
+
+        if db.get_balance(ctx.author.id) < amount:
+            await ctx.send("You don't have enough coins!")
+            return
+
+        receiver = ctx.message.mentions[0]
+        if receiver.bot:
+            await ctx.send("You can't pay a bot!")
+            return
+
+        if receiver == ctx.author:
+            await ctx.send("You can't pay yourself!")
+            return
+
+        if not db.user_exists(receiver.id):
+            await ctx.send(f"{receiver.name} has not started their Kingdom yet!")
+            return
+
+        db.add_balance(receiver.id, amount)
+        db.deduct_balance(ctx.author.id, amount)
+        await ctx.send(f'{ctx.author.mention} has paid {receiver.mention} {amount} coins.')
+
+
     @Cog.listener()
     async def on_ready(self):
         print(self.__class__.__name__, 'cog ready')

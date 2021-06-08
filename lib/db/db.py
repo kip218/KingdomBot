@@ -104,3 +104,27 @@ def change_kingdom_name(userID, kingdom_name):
 
 def change_kingdom_emblem(userID, kingdom_emblem):
     execute("UPDATE users SET KingdomEmblem = %s WHERE UserID = %s", kingdom_emblem, userID)
+
+
+def get_army(userID):
+    return field("SELECT Army FROM users WHERE userID = %s", userID)
+
+
+def get_unit(userID, unit_name):
+    army = get_army(userID)
+    for unit in army:
+        if unit_name == unit[0]:
+            return unit[0], unit[1]
+    return None, None
+
+
+def add_unit(userID, unit_to_add):
+    army = get_army(userID)
+    unit_name, unit_count = get_unit(userID, unit_to_add)
+    if unit_name and unit_count:
+        for unit in army:
+            if unit_name == unit[0]:
+                unit[1] = str(int(unit[1]) + 1)
+    else:
+        army.append([unit_to_add, '1'])
+    execute("UPDATE users SET Army = %s WHERE UserID = %s", army, userID)
