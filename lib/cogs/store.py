@@ -17,7 +17,8 @@ class Store(Cog):
         '''
         The store.
         '''
-        desc = f"Use `{self.bot.PREFIX}buy <item>` to buy.\n\n"
+        prefix = db.get_prefix(ctx.guild.id)
+        desc = f"Use `{prefix}buy <item>` to buy.\n\n"
         for unit in UNITS.keys():
             emoji = UNITS[unit].get_emoji()
             cost = UNITS[unit].get_cost()

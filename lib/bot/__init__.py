@@ -1,9 +1,12 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext.commands import Bot as BotBase
 from discord import Intents
-from discord.ext.commands import (CommandNotFound, BadArgument, MissingRequiredArgument, CommandOnCooldown, MaxConcurrencyReached)
+from discord.ext.commands import CommandNotFound, BadArgument, MissingRequiredArgument, CommandOnCooldown, MaxConcurrencyReached
+from discord.ext.commands import when_mentioned_or
 from discord.errors import Forbidden
-from discord import (TextChannel, DMChannel)
+from discord import TextChannel, DMChannel
+from discord import Embed, Permissions, Game
+from discord.utils import oauth_url
 from glob import glob
 from datetime import datetime
 from ..db import db
@@ -14,18 +17,28 @@ sys.path.append('../../')
 from settings import TOKEN
 
 
-PREFIX = "k!"
-BOT_INVITE_URL = "https://discord.com/api/oauth2/authorize?client_id=851391820834406400&permissions=354368&scope=bot"
-OWNER_IDS = [161774631303249921]
+OWNER_ID = 161774631303249921
+PERMISSIONS = Permissions()
+PERMISSIONS.update(add_reactions=True,
+                   view_audit_log=True,
+                   view_channel=True,
+                   send_messages=True,
+                   manage_messages=True,
+                   embed_links=True,
+                   read_message_history=True,
+                   use_external_emojis=True,
+                   )
 IGNORE_EXCEPTIONS = (CommandNotFound, BadArgument)
 COGS_PATH = [path.replace('/','.')[2:-3] for path in glob("./lib/cogs/*.py")]
 
 
+def get_prefix(bot, msg):
+    prefix = db.get_prefix(msg.guild.id)
+    return when_mentioned_or(prefix)(bot, msg)
+
 
 class Bot(BotBase):
     def __init__(self):
-        self.PREFIX = PREFIX
-        self.BOT_INVITE_URL = BOT_INVITE_URL
         self.ready = False
         self.scheduler = AsyncIOScheduler()
 
@@ -35,7 +48,7 @@ class Bot(BotBase):
 
         db.autosave(self.scheduler)
         print("running bot...")
-        super().__init__(command_prefix=PREFIX, owner_ids=OWNER_IDS, intents=intents)
+        super().__init__(command_prefix=get_prefix, owner_id=OWNER_ID, intents=intents)
 
 
     def setup(self):
@@ -56,11 +69,13 @@ class Bot(BotBase):
     def is_command(self, msg):
         content = msg.content
         cmd_lst = [cmd.name for cmd in self.commands]
-        return content.startswith(self.PREFIX) and content[len(self.PREFIX):].split(' ')[0] in cmd_lst
+        prefix = db.get_prefix(msg.guild.id)
+        return content.startswith(prefix) and content[len(prefix):].split(' ')[0] in cmd_lst
 
 
     def is_start_command(self, msg):
-        return msg.content[len(self.PREFIX):].split(' ')[0] == 'start'
+        prefix = db.get_prefix(msg.guild.id)
+        return msg.content[len(prefix):].split(' ')[0] == 'start'
 
 
     def format_log(self, msg):
@@ -114,6 +129,8 @@ class Bot(BotBase):
             self.ready = True
             self.launch_time = datetime.utcnow()
             self.scheduler.start()
+            self.BOT_INVITE_URL = oauth_url(self.user.id, permissions=PERMISSIONS)
+            await self.change_presence(activity=Game("@Kingdom help"))
             print("bot ready")
         else:
             print("bot reconnected")
@@ -126,7 +143,7 @@ class Bot(BotBase):
         userID = msg.author.id
         channel = msg.channel
         if self.is_command(msg) and not self.is_start_command(msg) and not db.user_exists(userID):
-            await channel.send(f"You have not started a Kingdom yet! Use {self.PREFIX}start to get started!")
+            await channel.send(f"You have not started a Kingdom yet! Use {db.get_prefix(msg.guild.id)}start to get started!")
         else:
             print("processing command...")
             await self.process_commands(msg)
@@ -134,7 +151,31 @@ class Bot(BotBase):
 
     async def on_command(self, ctx):
         if not db.user_exists(ctx.message.author.id):
-            await ctx.send(f"You have not started a Kingdom yet! Use {self.PREFIX}start to get started!")
+            await ctx.send(f"You have not started a Kingdom yet! Use {ctx.guild.id}start to get started!")
+
+
+    async def on_guild_join(self, guild):
+        # notify me when bot joins server
+        title = "KingdomBot joined a new server!"
+        desc = f"Server name: {guild.name}\nServer ID: {guild.id}\nMember count: {guild.member_count}\nServer owner: {guild.owner}"
+        color = 0x4CC417
+        embed = Embed(title=title,description=desc,color=color).set_thumbnail(url=guild.icon_url)
+        owner = self.get_user(self.owner_id)
+        await owner.send(embed=embed)
+        db.add_server(guild.id)
+        print(title, desc)
+
+
+    async def on_guild_remove(self, guild):
+        # notify me when bot leaves server
+        title = "KingdomBot left a server!"
+        desc = f"Server name: {guild.name}\nServer ID: {guild.id}\nMember count: {guild.member_count}\nServer owner: {guild.owner}"
+        color = 0xED1C24
+        embed = Embed(title=title,description=desc,color=color).set_thumbnail(url=guild.icon_url)
+        owner = self.get_user(self.owner_id)
+        await owner.send(embed=embed)
+        db.remove_server(guild_id)
+        print(title, desc)
 
 
 bot = Bot()

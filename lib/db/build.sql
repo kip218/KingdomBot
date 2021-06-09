@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS users (
     );
 
 CREATE TABLE IF NOT EXISTS servers (
-    ServerID int PRIMARY KEY,
+    ServerID bigint PRIMARY KEY,
     Prefix text DEFAULT 'k!'
     );

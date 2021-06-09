@@ -22,8 +22,7 @@ class Basic(Cog):
 
         userID= ctx.message.author.id
         username = ctx.message.author.name
-        db.execute("INSERT INTO users (UserID, Username) VALUES (%s, %s) ON CONFLICT (UserID) DO NOTHING;",
-                        userID, username)
+        db.add_user(userID, username)
         await ctx.send("Welcome to your Kingdom!")
 
 

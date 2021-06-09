@@ -76,8 +76,12 @@ def scriptexec(path):
 
 
 """
-Specific commands
+Specific commands for users
 """
+def add_user(userID, username):
+    execute("INSERT INTO users (UserID, Username) VALUES (%s, %s) ON CONFLICT (UserID) DO NOTHING;",
+                userID, username)
+
 def user_exists(userID):
     return bool(record("SELECT UserID FROM users WHERE UserID = %s", userID))
 
@@ -107,7 +111,7 @@ def change_kingdom_emblem(userID, kingdom_emblem):
 
 
 def get_army(userID):
-    return field("SELECT Army FROM users WHERE userID = %s", userID)
+    return field("SELECT Army FROM users WHERE UserID = %s", userID)
 
 
 def get_unit(userID, unit_name):
@@ -128,3 +132,22 @@ def add_unit(userID, unit_to_add):
     else:
         army.append([unit_to_add, '1'])
     execute("UPDATE users SET Army = %s WHERE UserID = %s", army, userID)
+
+"""
+Specific commands for servers
+"""
+def add_server(serverID):
+    execute("INSERT INTO servers (ServerID) VALUES (%s) ON CONFLICT (ServerID) DO NOTHING;",
+                serverID)
+
+
+def remove_server(serverID):
+    execute("DELETE FROM servers WHERE ServerID = %s", serverID)
+
+
+def get_prefix(serverID):
+    return field("SELECT Prefix FROM Servers WHERE ServerID = %s", serverID)
+
+
+def change_prefix(serverID, prefix):
+    execute("UPDATE servers SET Prefix = %s WHERE ServerID = %s", prefix, serverID)

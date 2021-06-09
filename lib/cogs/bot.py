@@ -3,6 +3,8 @@ from discord.ext.commands import command
 from datetime import datetime
 from discord import Embed
 
+from ..db import db
+
 
 class Bot(Cog):
     def __init__(self, bot):
@@ -69,6 +71,18 @@ class Bot(Cog):
         embed = Embed(title=title, url=url)\
                 .set_author(name=description, icon_url=avatar_url)
         await ctx.send(embed=embed)
+
+
+    @command()
+    async def prefix(self, ctx, new_prefix):
+        '''
+        Change the prefix for the bot.
+        '''
+        if len(new_prefix) > 5:
+            await ctx.send("Prefix can't be over 5 characters")
+            return
+        db.change_prefix(ctx.guild.id, new_prefix)
+        await ctx.send(f'Prefix has been changed to `{new_prefix}`')
 
 
     @Cog.listener()
