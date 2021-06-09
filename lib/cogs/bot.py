@@ -78,11 +78,19 @@ class Bot(Cog):
         '''
         Change the prefix for the bot.
         '''
+        if not ctx.author.guild_permissions.administrator:
+            await ctx.send("Only server admins can use this command!")
+            return
         if len(new_prefix) > 5:
             await ctx.send("Prefix can't be over 5 characters")
             return
         db.change_prefix(ctx.guild.id, new_prefix)
         await ctx.send(f'Prefix has been changed to `{new_prefix}`')
+
+
+    @command()
+    async def test(self, ctx):
+        await ctx.send("TESTING")
 
 
     @Cog.listener()
