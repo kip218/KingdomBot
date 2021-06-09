@@ -139,6 +139,16 @@ def add_unit(userID, unit_to_add):
         army.append([unit_to_add, '1'])
     execute("UPDATE users SET Army = %s WHERE UserID = %s", army, userID)
 
+
+def add_units(userID, unit_lst):
+    for unit in unit_lst:
+        add_unit(userID, unit)
+
+
+def reset_army(userID):
+    execute("UPDATE users SET Army = DEFAULT WHERE UserID = %s", userID)
+
+
 """
 Specific commands for servers
 """

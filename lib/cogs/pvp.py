@@ -1,8 +1,10 @@
 from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord import Embed
+from asyncio import sleep
 
 from ..db import db
+from ..war import *
 from .. import units
 UNITS = units.MAP
 
@@ -65,6 +67,57 @@ class Pvp(Cog):
             desc += f'{unit_emoji}`{unit_name}`       x {unit_count}\n'
         embed = Embed(title=f"{ctx.author.name}'s Army", description=desc)
         await ctx.send(embed=embed)
+
+
+    @command(aliases=['attack','invade'])
+    async def raid(self, ctx, user):
+        '''
+        Raid another user's Kingdom.
+        '''
+        if len(ctx.message.mentions) == 0:
+            await ctx.send("You must mention a user to raid!")
+            return
+        attacker = ctx.author
+        defender = ctx.message.mentions[0]
+        if not db.user_exists(defender.id):
+            await ctx.send(f"{defender.mention} has not started a Kingdom yet!")
+
+        def get_embed(i):
+            title = f'{attacker.name} VS {defender.name}'
+            embed = Embed(title=title)
+            embed.add_field(name=f"{attacker.name}'s Army", value=army1.army_state())
+            embed.add_field(name=f"{defender.name}'s Army", value=army2.army_state())
+            embed.set_footer(text=f"Round {i}")
+            return embed
+
+        army1 = Army(db.get_army(attacker.id))
+        army2 = Army(db.get_army(defender.id))
+        w = War(army1, army2)
+        
+        i = 1
+        embed = get_embed(i)
+        msg = await ctx.send(embed=embed)
+        while not w.war_over():
+            w.process_turn()
+            embed = get_embed(i)
+            i += 1
+            await sleep(0.5)
+            await msg.edit(embed=embed)
+            w.fill_gauge()
+
+        army1 = army1.get_full_army()
+        army2 = army2.get_full_army()
+        db.reset_army(attacker.id)
+        db.reset_army(defender.id)
+        db.add_units(attacker.id, [unit.get_name() for unit in army1])
+        db.add_units(defender.id, [unit.get_name() for unit in army2])
+
+        if army1:
+            await ctx.send("Raid successful! You have annihilated the opposing army!")
+        elif army2:
+            await ctx.send("Raid failed! You were destroyed by the opposing army!")
+
+
 
 
     @Cog.listener()
