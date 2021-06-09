@@ -30,8 +30,8 @@ class Store(Cog):
         await ctx.send(embed=embed)
 
 
-    @command()
-    async def buy(self, ctx, item):
+    @command(usage='<item> <n=1>')
+    async def buy(self, ctx, item, n:int=1):
         '''
         Buy an item from the store.
         '''
@@ -42,12 +42,14 @@ class Store(Cog):
         userID = ctx.author.id
         unit_name = UNITS[item].get_name()
         unit_cost = UNITS[item].get_cost()
-        if db.get_balance(userID) < unit_cost:
+        purchase_cost = unit_cost * n
+        if db.get_balance(userID) < purchase_cost:
             await ctx.send("You don't have enough coins!")
             return
-        db.deduct_balance(userID, unit_cost)
-        db.add_unit(userID, unit_name)
-        await ctx.send(f'{unit_name} has been added to your army!')
+        for i in range(n):
+            db.deduct_balance(userID, unit_cost)
+            db.add_unit(userID, unit_name)
+        await ctx.send(f'{unit_name} x{i} has been added to your army!')
 
 
     @Cog.listener()

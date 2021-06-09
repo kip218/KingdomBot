@@ -32,6 +32,9 @@ class Army():
             health = unit.get_health()
             max_hp = unit.get_max_hp()
             res += f'{emoji}`{name}`   {health}/{max_hp}HP\n'
+            if len(res) > 300:
+                res += 'more...'
+                break
         if res:
             return res
         else:
