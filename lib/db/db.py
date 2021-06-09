@@ -116,6 +116,8 @@ def get_army(userID):
 
 def get_unit(userID, unit_name):
     army = get_army(userID)
+    if army is None:
+        return None, None
     for unit in army:
         if unit_name == unit[0]:
             return unit[0], unit[1]
@@ -124,6 +126,8 @@ def get_unit(userID, unit_name):
 
 def add_unit(userID, unit_to_add):
     army = get_army(userID)
+    if army is None:
+        army = [[unit_to_add], '1']
     unit_name, unit_count = get_unit(userID, unit_to_add)
     if unit_name and unit_count:
         for unit in army:
