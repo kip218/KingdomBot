@@ -8,11 +8,12 @@ class Army():
     def __init__(self, army):
         self.army = army
         self.full_army = []
-        for unit in self.army:
-            unit_name = unit[0]
-            unit_count = int(unit[1])
-            for i in range(unit_count):
-                self.full_army.append(deepcopy(UNITS[unit_name]))
+        if self.army:
+            for unit in self.army:
+                unit_name = unit[0]
+                unit_count = int(unit[1])
+                for i in range(unit_count):
+                    self.full_army.append(deepcopy(UNITS[unit_name]))
 
     def list_army(self):
         res = ''

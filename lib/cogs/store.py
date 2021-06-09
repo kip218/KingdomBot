@@ -44,6 +44,7 @@ class Store(Cog):
         unit_cost = UNITS[item].get_cost()
         if db.get_balance(userID) < unit_cost:
             await ctx.send("You don't have enough coins!")
+            return
         db.deduct_balance(userID, unit_cost)
         db.add_unit(userID, unit_name)
         await ctx.send(f'{unit_name} has been added to your army!')

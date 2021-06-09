@@ -153,7 +153,8 @@ class Bot(BotBase):
 
     async def on_command(self, ctx):
         if not db.user_exists(ctx.message.author.id):
-            await ctx.send(f"You have not started a Kingdom yet! Use {ctx.guild.id}start to get started!")
+            await ctx.send(f"You have not started a Kingdom yet! Use {db.get_prefix(msg.guild.id)}start to get started!")
+            return
 
 
     async def on_guild_join(self, guild):
