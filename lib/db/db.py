@@ -127,7 +127,9 @@ def get_unit(userID, unit_name):
 def add_unit(userID, unit_to_add):
     army = get_army(userID)
     if army is None:
-        army = [[unit_to_add], '1']
+        army = [[unit_to_add, '1']]
+        execute("UPDATE users SET Army = %s WHERE UserID = %s", army, userID)
+        return
     unit_name, unit_count = get_unit(userID, unit_to_add)
     if unit_name and unit_count:
         for unit in army:

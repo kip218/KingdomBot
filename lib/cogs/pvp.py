@@ -55,6 +55,7 @@ class Pvp(Cog):
         army = db.get_army(ctx.author.id)
         if army is None:
             await ctx.send('Your army is empty!')
+            return
 
         desc = ''
         for unit in army:
