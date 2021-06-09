@@ -49,7 +49,35 @@ class Store(Cog):
         for i in range(n):
             db.deduct_balance(userID, unit_cost)
             db.add_unit(userID, unit_name)
-        await ctx.send(f'{unit_name} x{i} has been added to your army!')
+        await ctx.send(f'{unit_name} x{n} has been added to your army!')
+
+
+    @command(usage='<unit>')
+    async def stats(self, ctx, unit):
+        '''
+        Shows unit stats.
+        '''
+        unit = unit.capitalize()
+        if unit not in UNITS:
+            await ctx.send(f'Could not find {unit}.')
+
+        unit = UNITS[unit]
+        name = unit.get_name()
+        emoji = unit.get_emoji()
+        cost = unit.get_cost()
+        dmg = unit.get_dmg()
+        max_hp = unit.get_max_hp()
+        speed = unit.get_speed()
+        gauge = unit.get_gauge()
+
+        desc = f'**NAME** {name}\n\
+                 **COST** {cost}\n\
+                 **ATK** {dmg}\n\
+                 **HP** {max_hp}\n\
+                 **SPEED** {speed}\n\
+                 **INITIAL GAUGE** {gauge}'
+        embed = Embed(title=f"{emoji}`{name}`", description=desc)
+        await ctx.send(embed=embed)
 
 
     @Cog.listener()

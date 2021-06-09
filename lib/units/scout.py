@@ -9,4 +9,4 @@ class Scout(Unit):
         self.max_hp = 70
         self.health = self.max_hp
         self.speed = 0.8
-        self.gauge = 0
+        self.gauge = 0.5

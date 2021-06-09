@@ -26,16 +26,18 @@ class Army():
 
     def army_state(self):
         res = ''
+        n = 0
         for unit in self.full_army:
-            name = unit.get_name()
-            emoji = unit.get_emoji()
-            health = unit.get_health()
-            max_hp = unit.get_max_hp()
-            res += f'{emoji}`{name}`   {health}/{max_hp}HP\n'
-            if len(res) > 300:
-                res += 'more...'
-                break
+            if len(res) > 400:
+                n += 1
+            else:
+                name = unit.get_name()
+                emoji = unit.get_emoji()
+                health = unit.get_health()
+                max_hp = unit.get_max_hp()
+                res += f'{emoji}`{name}`   {health}/{max_hp}HP\n'
         if res:
+            res += f'*+ {n} more units...*'
             return res
         else:
             return ':skull::skull::skull::skull::skull:'

@@ -30,6 +30,9 @@ class Unit():
     def get_speed(self):
         return self.speed
 
+    def get_gauge(self):
+        return self.gauge
+
     def take_dmg(self, dmg):
         self.health -= dmg
 
