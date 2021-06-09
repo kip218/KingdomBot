@@ -79,6 +79,9 @@ class Pvp(Cog):
             return
         attacker = ctx.author
         defender = ctx.message.mentions[0]
+        if attacker == defender:
+            await ctx.send("You cannot raid yourself!")
+            return
         if not db.user_exists(defender.id):
             await ctx.send(f"{defender.mention} has not started a Kingdom yet!")
 
