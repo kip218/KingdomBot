@@ -85,10 +85,12 @@ class Bot(BotBase):
         if isinstance(channel, TextChannel):
             channel_name = channel.name
             server_name = msg.guild.name
+            server_id = msg.guild.id
         elif isinstance(channel, DMChannel):
             channel_name = channel.recipient.name
             server_name = "DMChannel"
-        return server_name + "| " + channel_name + "| " + user_name + ": " + content
+            server_id = ''
+        return f"({server_id}) {server_name} | {channel_name} | {user_name} : {content}"
 
 
     async def on_connect(self):

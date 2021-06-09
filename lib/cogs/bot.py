@@ -88,11 +88,6 @@ class Bot(Cog):
         await ctx.send(f'Prefix has been changed to `{new_prefix}`')
 
 
-    @command()
-    async def test(self, ctx):
-        await ctx.send("TESTING")
-
-
     @Cog.listener()
     async def on_ready(self):
         print(self.__class__.__name__, 'cog ready')
