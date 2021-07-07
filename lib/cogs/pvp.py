@@ -84,6 +84,7 @@ class Pvp(Cog):
             return
         if not db.user_exists(defender.id):
             await ctx.send(f"{defender.mention} has not started a Kingdom yet!")
+            return
 
         def get_embed(i):
             title = f'{attacker.name} VS {defender.name}'

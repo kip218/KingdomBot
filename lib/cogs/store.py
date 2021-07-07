@@ -38,6 +38,14 @@ class Store(Cog):
         item = item.capitalize()
         if item not in UNITS:
             await ctx.send(f'Could not find {item} in store.')
+            return
+
+        if n <= 0:
+            await ctx.send('<n> must be a positive number.')
+            return
+        elif n > 10:
+            await ctx.send('You can only buy 10 items at a time max.')
+            return
 
         userID = ctx.author.id
         unit_name = UNITS[item].get_name()

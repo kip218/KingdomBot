@@ -29,7 +29,8 @@ PERMISSIONS.update(add_reactions=True,
                    use_external_emojis=True,
                    )
 IGNORE_EXCEPTIONS = (CommandNotFound, BadArgument)
-COGS_PATH = [path.replace('/','.')[2:-3] for path in glob("./lib/cogs/*.py")]
+COGS_PATH = [path.replace('/','.').replace('\\','.')[2:-3] for path in glob("./lib/cogs/*.py")]
+
 
 
 def get_prefix(bot, msg):
@@ -153,7 +154,7 @@ class Bot(BotBase):
 
     async def on_command(self, ctx):
         if not db.user_exists(ctx.message.author.id):
-            await ctx.send(f"You have not started a Kingdom yet! Use {db.get_prefix(msg.guild.id)}start to get started!")
+            await ctx.send(f"You have not started a Kingdom yet! Use {db.get_prefix(ctx.message.guild.id)}start to get started!")
             return
 
 

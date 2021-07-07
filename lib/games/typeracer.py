@@ -88,7 +88,7 @@ class TypeRacer():
         temp = None
         #sorting scoreboard by score
         scoreboard_lst = [self.scoreboard[userID] for userID in self.scoreboard.keys()]
-        scoreboard_lst = sorted(scoreboard_lst, key=lambda k: k['score'])
+        scoreboard_lst = sorted(scoreboard_lst, key=lambda k: k['score'], reverse=True)
         for i in range(len(scoreboard_lst)):
             score = scoreboard_lst[i]['score']
             username = scoreboard_lst[i]['username']
