@@ -48,6 +48,13 @@ class Store(Cog):
             return
 
         userID = ctx.author.id
+
+        army_limit = 10
+        army_size = db.get_armysize(userID)
+        if army_size + n > army_limit:
+            await ctx.send(f'Army capacity of {army_limit} exceeded.')
+            return
+
         unit_name = UNITS[item].get_name()
         unit_cost = UNITS[item].get_cost()
         purchase_cost = unit_cost * n

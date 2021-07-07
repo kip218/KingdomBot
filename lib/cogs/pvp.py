@@ -54,10 +54,12 @@ class Pvp(Cog):
         '''
         Shows your army.
         '''
-        army = db.get_army(ctx.author.id)
+        userID = ctx.author.id
+        army = db.get_army(userID)
         if army is None:
             await ctx.send('Your army is empty!')
             return
+        army_size = db.get_armysize(userID)
 
         desc = ''
         for unit in army:
@@ -65,7 +67,8 @@ class Pvp(Cog):
             unit_count = int(unit[1])
             unit_emoji = UNITS[unit_name].get_emoji()
             desc += f'{unit_emoji}`{unit_name}`       x {unit_count}\n'
-        embed = Embed(title=f"{ctx.author.name}'s Army", description=desc)
+        embed = Embed(title=f"{ctx.author.name}'s Army", description=desc)\
+                    .set_footer(text=f"Army Capacity: {army_size}/10")
         await ctx.send(embed=embed)
 
 

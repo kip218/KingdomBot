@@ -114,6 +114,14 @@ def get_army(userID):
     return field("SELECT Army FROM users WHERE UserID = %s", userID)
 
 
+def get_armysize(userID):
+    army = get_army(userID)
+    size = 0
+    for unit in army:
+        size += int(unit[1])
+    return size
+
+
 def get_unit(userID, unit_name):
     army = get_army(userID)
     if army is None:
