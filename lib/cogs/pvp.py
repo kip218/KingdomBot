@@ -82,6 +82,9 @@ class Pvp(Cog):
             return
         attacker = ctx.author
         defender = ctx.message.mentions[0]
+        if defender.bot:
+            await ctx.send("You cannot raid a bot!")
+            return
         if attacker == defender:
             await ctx.send("You cannot raid yourself!")
             return
@@ -100,7 +103,7 @@ class Pvp(Cog):
         army1 = Army(db.get_army(attacker.id))
         army2 = Army(db.get_army(defender.id))
         w = War(army1, army2)
-        
+
         i = 1
         embed = get_embed(i)
         msg = await ctx.send(embed=embed)

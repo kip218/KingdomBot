@@ -52,7 +52,7 @@ class Store(Cog):
         army_limit = 10
         army_size = db.get_armysize(userID)
         if army_size + n > army_limit:
-            await ctx.send(f'Army capacity of {army_limit} exceeded.')
+            await ctx.send(f'Army capacity of {army_limit} exceeded. Current army size: {army_size}')
             return
 
         unit_name = UNITS[item].get_name()
