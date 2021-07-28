@@ -80,7 +80,7 @@ class Bot(Cog):
         '''
         if not new_prefix:
             prefix = db.get_prefix(ctx.guild.id)
-            await ctx.send("Current prefix for this server is `prefix`")
+            await ctx.send(f"Current prefix for this server is `{prefix}`")
             return
         if not ctx.author.guild_permissions.administrator:
             await ctx.send("Only server admins can change the prefix!")
