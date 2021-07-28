@@ -30,6 +30,7 @@ PERMISSIONS.update(add_reactions=True,
                    )
 IGNORE_EXCEPTIONS = (CommandNotFound, BadArgument)
 COGS_PATH = [path.replace('/','.').replace('\\','.')[2:-3] for path in glob("./lib/cogs/*.py")]
+DELETED_MESSAGES = {}
 
 
 
@@ -150,6 +151,15 @@ class Bot(BotBase):
         else:
             print("processing command...")
             await self.process_commands(msg)
+
+
+    async def on_message_delete(self, msg):
+        key = f"{msg.guild.id}{msg.channel.id}"
+        value = {'content':msg.content,
+                 'author':f"{msg.author.name}#{msg.author.discriminator}",
+                 'avatar_url':msg.author.avatar_url,
+                 'time':msg.created_at}
+        DELETED_MESSAGES[key] = value
 
 
     async def on_command(self, ctx):

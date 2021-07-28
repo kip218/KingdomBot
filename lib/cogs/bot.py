@@ -92,16 +92,6 @@ class Bot(Cog):
         await ctx.send(f'Prefix has been changed to `{new_prefix}`')
 
 
-    @command()
-    async def sheesh(self, ctx):
-        '''
-        SHEEEEESH!
-        '''
-        from random import randint
-        n = randint(2, 30)
-        await ctx.send(f"SH{'E'*n}SH!")
-
-
     @Cog.listener()
     async def on_ready(self):
         print(self.__class__.__name__, 'cog ready')

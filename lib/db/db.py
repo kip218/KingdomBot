@@ -116,6 +116,8 @@ def get_army(userID):
 
 def get_armysize(userID):
     army = get_army(userID)
+    if army is None:
+        return 0
     size = 0
     for unit in army:
         size += int(unit[1])
