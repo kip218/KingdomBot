@@ -74,7 +74,7 @@ class Bot(Cog):
 
 
     @command()
-    async def prefix(self, ctx, new_prefix):
+    async def prefix(self, ctx, new_prefix=''):
         '''
         Change the prefix for the bot.
         '''
