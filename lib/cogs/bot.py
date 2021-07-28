@@ -78,8 +78,12 @@ class Bot(Cog):
         '''
         Change the prefix for the bot.
         '''
+        if not new_prefix:
+            prefix = db.get_prefix(ctx.guild.id)
+            await ctx.send("Current prefix for this server is `prefix`")
+            return
         if not ctx.author.guild_permissions.administrator:
-            await ctx.send("Only server admins can use this command!")
+            await ctx.send("Only server admins can change the prefix!")
             return
         if len(new_prefix) > 5:
             await ctx.send("Prefix can't be over 5 characters")
