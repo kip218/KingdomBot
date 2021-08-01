@@ -2,6 +2,7 @@ from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord import Embed
 from random import randint
+from udpy import UrbanClient
 
 from ..db import db
 from .. import bot
@@ -34,6 +35,19 @@ class Misc(Cog):
         msg = DELETED_MESSAGES[key]
         embed = Embed(description=msg['content'],timestamp=msg['time'])\
                 .set_author(name=msg['author'],icon_url=msg['avatar_url'])
+        await ctx.send(embed=embed)
+
+
+    @command()
+    async def define(self, ctx, *, phrase):
+        '''
+        Get definition from Urban Dictionary
+        '''
+        client = UrbanClient()
+        defs = client.get_definition(phrase)
+        best_def = defs[0]
+        embed = Embed(title=best_def.word,description=f"*{best_def.definition}*")\
+                    .set_footer(text=f"{best_def.example}")
         await ctx.send(embed=embed)
 
 
