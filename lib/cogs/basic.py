@@ -23,7 +23,8 @@ class Basic(Cog):
         userID= ctx.message.author.id
         username = ctx.message.author.name
         db.add_user(userID, username)
-        await ctx.send("Welcome to your Kingdom!")
+        prefix = db.get_prefix(ctx.guild.id)
+        await ctx.send(f"Welcome to your Kingdom! Try `{prefix}kingdom` to see your kingdom.")
 
 
     @command(aliases=['profile','balance','base','info'])

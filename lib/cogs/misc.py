@@ -41,10 +41,13 @@ class Misc(Cog):
     @command()
     async def define(self, ctx, *, phrase):
         '''
-        Get definition from Urban Dictionary
+        Get definition from Urban Dictionary.
         '''
         client = UrbanClient()
         defs = client.get_definition(phrase)
+        if defs is None:
+            await ctx.send('Definition not found.')
+            return
         best_def = defs[0]
         embed = Embed(title=best_def.word,description=f"*{best_def.definition}*")\
                     .set_footer(text=f"{best_def.example}")
