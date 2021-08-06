@@ -31,6 +31,7 @@ PERMISSIONS.update(add_reactions=True,
 IGNORE_EXCEPTIONS = (CommandNotFound, BadArgument)
 COGS_PATH = [path.replace('/','.').replace('\\','.')[2:-3] for path in glob("./lib/cogs/*.py")]
 DELETED_MESSAGES = {}
+DEFAULT_PREFIX = 'k!'
 
 
 
@@ -71,7 +72,10 @@ class Bot(BotBase):
     def is_command(self, msg):
         content = msg.content
         cmd_lst = [cmd.name for cmd in self.commands]
-        prefix = db.get_prefix(msg.guild.id)
+        if msg.guild.id is None:
+            prefix = DEFAULT_PREFIX
+        else:
+            prefix = db.get_prefix(msg.guild.id)
         return content.startswith(prefix) and content[len(prefix):].split(' ')[0] in cmd_lst
 
 

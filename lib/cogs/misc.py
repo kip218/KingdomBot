@@ -3,6 +3,8 @@ from discord.ext.commands import command
 from discord import Embed
 from random import randint
 from udpy import UrbanClient
+import asyncio
+import re
 
 from ..db import db
 from .. import bot
@@ -52,6 +54,40 @@ class Misc(Cog):
         embed = Embed(title=best_def.word,description=f"*{best_def.definition}*")\
                     .set_footer(text=f"{best_def.example}")
         await ctx.send(embed=embed)
+
+
+    @command()
+    async def remind(self, ctx, time:str, *, task):
+        '''
+        Get reminded of <task> after <time>.
+        <time> should be formatted as "hh:mm:ss".
+        '''
+        def getSec(s):
+            l = list(map(int, s.split(':')))
+            return sum(n * sec for n, sec in zip(l[::-1], (1, 60, 3600)))
+
+        TIME_REGEX = re.compile(r"([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$")
+        MULTIPLER = {
+          "d": 86400,
+          "h": 3600,
+          "m": 60,
+          "s": 1,
+        }
+        match = TIME_REGEX.match(time)
+
+        if not match:
+          await ctx.send("Please enter a valid time. Time should be formatted as 'hh:mm:ss'.")
+          return
+
+        time = match.group()
+        seconds = getSec(time)
+
+        await ctx.send(f"{ctx.author.mention} I will remind you of `{task}` after {seconds} seconds.")
+        await asyncio.sleep(seconds)
+
+        if ctx.author.dm_channel is None:
+            await ctx.author.create_dm()
+        await ctx.author.dm_channel.send(f"**Reminder:**\n`{task}`")
 
 
     @Cog.listener()
