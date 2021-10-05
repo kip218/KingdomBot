@@ -31,6 +31,7 @@ PERMISSIONS.update(add_reactions=True,
 IGNORE_EXCEPTIONS = (CommandNotFound, BadArgument)
 COGS_PATH = [path.replace('/','.').replace('\\','.')[2:-3] for path in glob("./lib/cogs/*.py")]
 DELETED_MESSAGES = {}
+EDITED_MESSAGES = {}
 DEFAULT_PREFIX = 'k!'
 
 
@@ -165,6 +166,14 @@ class Bot(BotBase):
                  'time':msg.created_at}
         DELETED_MESSAGES[key] = value
 
+
+    async def on_message_edit(self, msg, new_msg):
+        key = f"{msg.guild.id}{msg.channel.id}"
+        value = {'content':msg.content,
+                 'author':f"{msg.author.name}#{msg.author.discriminator}",
+                 'avatar_url':msg.author.avatar_url,
+                 'time':msg.created_at}
+        EDITED_MESSAGES[key] = value
 
     async def on_command(self, ctx):
         if not db.user_exists(ctx.message.author.id):

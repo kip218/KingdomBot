@@ -9,6 +9,7 @@ import re
 from ..db import db
 from .. import bot
 DELETED_MESSAGES = bot.DELETED_MESSAGES
+EDITED_MESSAGES = bot.EDITED_MESSAGES
 
 
 class Misc(Cog):
@@ -35,6 +36,21 @@ class Misc(Cog):
             await ctx.send("There's nothing to snipe!")
             return
         msg = DELETED_MESSAGES[key]
+        embed = Embed(description=msg['content'],timestamp=msg['time'])\
+                .set_author(name=msg['author'],icon_url=msg['avatar_url'])
+        await ctx.send(embed=embed)
+
+
+    @command()
+    async def editsnipe(self, ctx):
+        '''
+        See last edited message.
+        '''
+        key = f"{ctx.guild.id}{ctx.channel.id}"
+        if key not in EDITED_MESSAGES:
+            await ctx.send("There's nothing to snipe!")
+            return
+        msg = EDITED_MESSAGES[key]
         embed = Embed(description=msg['content'],timestamp=msg['time'])\
                 .set_author(name=msg['author'],icon_url=msg['avatar_url'])
         await ctx.send(embed=embed)
