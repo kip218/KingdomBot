@@ -22,8 +22,17 @@ class Misc(Cog):
         '''
         SHEEEEESH!
         '''
-        n = randint(2, 30)
+        n = randint(2, 40)
         await ctx.send(f"SH{'E'*n}SH!")
+
+
+    @command()
+    async def pp(self, ctx):
+        '''
+        pp?
+        '''
+        n = randint(2, 40)
+        await ctx.send(f"3{'='*n}D")
 
 
     @command()

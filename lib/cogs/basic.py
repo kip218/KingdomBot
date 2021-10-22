@@ -27,15 +27,18 @@ class Basic(Cog):
         await ctx.send(f"Welcome to your Kingdom! Try `{prefix}kingdom` to see your kingdom.")
 
 
-    @command(aliases=['profile','balance','base','info'])
-    async def kingdom(self, ctx):
+    @command(usage='[user.mention]', aliases=['bal','balance','base','info'])
+    async def kingdom(self, ctx, user=None):
         '''
-        Shows your kingdom.
+        Shows user's kingdom. Shows your kingdom if no argument is provided.
         '''
+        if user and ctx.message.mentions:
+            user = ctx.message.mentions[0]
+        else:
+            user = ctx.message.author
         balance, kingdom_name, kingdom_emblem = \
                 db.record("SELECT Balance, KingdomName, KingdomEmblem\
-                           FROM users WHERE UserID = %s", ctx.message.author.id)
-        user = ctx.message.author
+                           FROM users WHERE UserID = %s", user.id)
         title = kingdom_name
         color = user.color
         icon_url = kingdom_emblem
@@ -67,7 +70,7 @@ class Basic(Cog):
         Change your Kingdom Emblem.
         '''
         if isinstance(kingdom_emblem, str):
-            await ctx.send("This command only takes <custom emoji> as an argument!")
+            await ctx.send("This command only takes <custom emoji> as an argument! The custom emoji must be from this server.")
             return
         userID = ctx.author.id
         db.change_kingdom_emblem(userID, str(kingdom_emblem.url))
