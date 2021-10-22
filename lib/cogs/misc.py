@@ -32,7 +32,7 @@ class Misc(Cog):
         pp?
         '''
         n = randint(2, 40)
-        await ctx.send(f"3{'='*n}D")
+        await ctx.send(f"8{'='*n}D")
 
 
     @command()
