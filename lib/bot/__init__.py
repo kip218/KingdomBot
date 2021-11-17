@@ -33,6 +33,7 @@ COGS_PATH = [path.replace('/','.').replace('\\','.')[2:-3] for path in glob("./l
 DELETED_MESSAGES = {}
 EDITED_MESSAGES = {}
 DEFAULT_PREFIX = 'k!'
+POLL_CHANNELS = {}
 
 
 
@@ -156,6 +157,14 @@ class Bot(BotBase):
         else:
             print("processing command...")
             await self.process_commands(msg)
+
+        #poll channel function
+        if msg.channel.id in POLL_CHANNELS:
+            reactions = POLL_CHANNELS[msg.channel.id]
+            for reaction in reactions:
+                await msg.add_reaction(reaction)
+
+
 
 
     async def on_message_delete(self, msg):

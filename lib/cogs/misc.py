@@ -10,6 +10,7 @@ from ..db import db
 from .. import bot
 DELETED_MESSAGES = bot.DELETED_MESSAGES
 EDITED_MESSAGES = bot.EDITED_MESSAGES
+POLL_CHANNELS = bot.POLL_CHANNELS
 
 
 class Misc(Cog):
@@ -119,7 +120,6 @@ class Misc(Cog):
     async def avatar(self, ctx, *, user: str=None):
         '''
         [user]'s profile picture. Sends your profile picture if [user] not specified.
-        w.avatar [user]
         '''
         # gets embed msg of member's avatar
         def get_pfp(member):
@@ -158,6 +158,42 @@ class Misc(Cog):
             else:
                 embed = get_pfp(member)
                 await ctx.send(embed=embed)
+
+    @command()
+    async def poll(self, ctx, channel):
+        '''
+        Set the bot to automatically react to all messages in <channel> with specific set of reactions.
+        Prompt will be shown after the initial command.
+        '''
+        if not ctx.author.guild_permissions.administrator:
+            await ctx.send("Only server admins can use this command!")
+            return
+        if not ctx.message.channel_mentions:
+            await ctx.send("You must mention a channel to set up the poll.")
+            return
+
+        channel = ctx.message.channel_mentions[0]
+        prompt = await ctx.send(f"Configuring {channel.mention} as poll channel. React to this message with a set of reactions needed for poll. Type 'done' when you're done reacting.")
+
+        def check_author(msg):
+            return msg.author == ctx.author and msg.content == 'done'
+        
+        try:
+            done = await self.bot.wait_for('message', check=check_author, timeout=60)
+        except TimeoutError:
+            await ctx.message.edit(content=ctx.message.content + "\n\nThe prompt has timed out!")
+            return
+
+        emoji_lst = []
+        prompt = await prompt.channel.fetch_message(prompt.id)
+        for reaction in prompt.reactions:
+            users = await reaction.users().flatten()
+            if ctx.author in users:
+                emoji_lst.append(reaction.emoji)
+
+        POLL_CHANNELS[channel.id] = emoji_lst
+        await ctx.send(f"{channel.mention} has been configured as a poll channel.")
+
 
 
     @Cog.listener()
