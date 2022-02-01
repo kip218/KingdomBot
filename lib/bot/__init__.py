@@ -154,7 +154,7 @@ class Bot(BotBase):
         channel = msg.channel
         if self.is_command(msg) and not self.is_start_command(msg) and not db.user_exists(userID):
             await channel.send(f"You have not started a Kingdom yet! Use {db.get_prefix(msg.guild.id)}start to get started!")
-        else:
+        elif self.is_command(msg):
             print("processing command...")
             await self.process_commands(msg)
 

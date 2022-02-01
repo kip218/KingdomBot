@@ -108,7 +108,7 @@ class Misc(Cog):
         if l: s = l.pop()
         if l: m = l.pop()
         if l: h = l.pop()
-        if l: d = d.pop()
+        if l: d = l.pop()
 
         seconds = getSec(match.group())
         now = datetime.utcnow()
