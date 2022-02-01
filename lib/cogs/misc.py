@@ -121,7 +121,7 @@ class Misc(Cog):
         # await ctx.author.dm_channel.send(f"**Reminder:**\n`{task}`")
 
 
-    @loop(seconds=2)
+    @loop(seconds=60)
     async def check_reminders(self):
         reminders = db.get_reminders(datetime.utcnow())
         for reminder in reminders:
