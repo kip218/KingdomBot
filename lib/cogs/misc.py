@@ -96,7 +96,7 @@ class Misc(Cog):
             l = list(map(int, s.split(':')))
             return sum(n * sec for n, sec in zip(l[::-1], (1, 60, 3600, 86400)))
 
-        TIME_REGEX = re.compile(r"/(([0-2]?\d|30):([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$)|(([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$)|(([0-5]?\d):([0-5]?\d)$)|(([0-5]?\d)$)/gm")
+        TIME_REGEX = re.compile(r"(([0-2]?\d|30):([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$)|(([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$)|(([0-5]?\d):([0-5]?\d)$)|(([0-5]?\d)$)")
         match = TIME_REGEX.match(time)
 
         if not match:
