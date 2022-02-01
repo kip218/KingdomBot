@@ -1,8 +1,10 @@
 from discord.ext.commands import Cog
 from discord.ext.commands import command
+from discord.ext.tasks import loop
 from discord import Embed
 from random import randint
 from udpy import UrbanClient
+from datetime import datetime, timedelta
 import asyncio
 import re
 
@@ -16,6 +18,7 @@ POLL_CHANNELS = bot.POLL_CHANNELS
 class Misc(Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.check_reminders.start()
 
 
     @command()
@@ -105,15 +108,29 @@ class Misc(Cog):
           await ctx.send("Please enter a valid time. Time should be formatted as 'hh:mm:ss'.")
           return
 
-        time = match.group()
-        seconds = getSec(time)
+        seconds = getSec(match.group())
+        now = datetime.utcnow()
+        reminderTime = now + timedelta(seconds=seconds)
+        reminderID = int(str(int(now.timestamp()))[-9:] + str(int(reminderTime.timestamp()))[-9:])
 
+        db.add_reminder(reminderID, task, reminderTime, ctx.author.id)
         await ctx.send(f"{ctx.author.mention} I will remind you of `{task}` after {seconds} seconds.")
-        await asyncio.sleep(seconds)
 
-        if ctx.author.dm_channel is None:
-            await ctx.author.create_dm()
-        await ctx.author.dm_channel.send(f"**Reminder:**\n`{task}`")
+        # if ctx.author.dm_channel is None:
+        #     await ctx.author.create_dm()
+        # await ctx.author.dm_channel.send(f"**Reminder:**\n`{task}`")
+
+
+    @loop(seconds=2)
+    async def check_reminders(self):
+        reminders = db.get_reminders(datetime.utcnow())
+        for reminder in reminders:
+            reminderID, task, userID = reminder[0], reminder[1], reminder[2]
+            user = await self.bot.fetch_user(userID)
+            if user.dm_channel is None:
+                await user.create_dm()
+            await user.dm_channel.send(f"**Reminder:**\n`{task}`")
+            db.remove_reminder(reminderID)
 
 
     @command()

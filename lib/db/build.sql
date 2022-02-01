@@ -15,3 +15,10 @@ CREATE TABLE IF NOT EXISTS servers (
     ServerID bigint PRIMARY KEY,
     Prefix text DEFAULT 'k!'
     );
+
+CREATE TABLe IF NOT EXISTS reminders (
+    ReminderID bigint PRIMARY KEY,
+    Task text,
+    ReminderTime timestamp,
+    UserID bigint
+    );

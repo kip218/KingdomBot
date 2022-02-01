@@ -159,6 +159,19 @@ def reset_army(userID):
     execute("UPDATE users SET Army = DEFAULT WHERE UserID = %s", userID)
 
 
+def add_reminder(reminderID, task, reminderTime, userID):
+    execute("INSERT INTO Reminders (ReminderID, Task, ReminderTime, UserID) VALUES (%s, %s, %s, %s) ON CONFLICT (ReminderID) DO NOTHING;",
+                reminderID, task, reminderTime, userID)
+
+
+def get_reminders(now):
+    return records("SELECT ReminderID, Task, UserID FROM Reminders WHERE ReminderTime::timestamptz <= %s::timestamptz", now)
+
+
+def remove_reminder(reminderID):
+    execute("DELETE FROM Reminders WHERE ReminderID = %s", reminderID)
+
+
 """
 Specific commands for servers
 """

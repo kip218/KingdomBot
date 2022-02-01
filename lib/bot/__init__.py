@@ -74,7 +74,7 @@ class Bot(BotBase):
     def is_command(self, msg):
         content = msg.content
         cmd_lst = [cmd.name for cmd in self.commands]
-        if msg.guild.id is None:
+        if msg.guild is None:
             prefix = DEFAULT_PREFIX
         else:
             prefix = db.get_prefix(msg.guild.id)
