@@ -89,24 +89,26 @@ class Misc(Cog):
     async def remind(self, ctx, time:str, *, task):
         '''
         Get reminded of <task> after <time>.
-        <time> should be formatted as "hh:mm:ss".
+        <time> should be formatted as "dd:hh:mm:ss".
+        Can keep track of up to 30 days.
         '''
         def getSec(s):
             l = list(map(int, s.split(':')))
-            return sum(n * sec for n, sec in zip(l[::-1], (1, 60, 3600)))
+            return sum(n * sec for n, sec in zip(l[::-1], (1, 60, 3600, 86400)))
 
-        TIME_REGEX = re.compile(r"([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$")
-        MULTIPLER = {
-          "d": 86400,
-          "h": 3600,
-          "m": 60,
-          "s": 1,
-        }
+        TIME_REGEX = re.compile(r"/(([0-2]?\d|30):([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$)|(([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)$)|(([0-5]?\d):([0-5]?\d)$)|(([0-5]?\d)$)/gm")
         match = TIME_REGEX.match(time)
 
         if not match:
-          await ctx.send("Please enter a valid time. Time should be formatted as 'hh:mm:ss'.")
-          return
+            await ctx.send("Please enter a valid time. Time should be formatted as 'dd:hh:mm:ss'.")
+            return
+
+        d, h, m, s = 0, 0, 0, 0
+        l = time.split(':')
+        if l: s = l.pop()
+        if l: m = l.pop()
+        if l: h = l.pop()
+        if l: d = d.pop()
 
         seconds = getSec(match.group())
         now = datetime.utcnow()
@@ -114,11 +116,7 @@ class Misc(Cog):
         reminderID = int(str(int(now.timestamp()))[-9:] + str(int(reminderTime.timestamp()))[-9:])
 
         db.add_reminder(reminderID, task, reminderTime, ctx.author.id)
-        await ctx.send(f"{ctx.author.mention} I will remind you of `{task}` after {seconds} seconds.")
-
-        # if ctx.author.dm_channel is None:
-        #     await ctx.author.create_dm()
-        # await ctx.author.dm_channel.send(f"**Reminder:**\n`{task}`")
+        await ctx.send(f"{ctx.author.mention} I will remind you of `{task}` after {d}d {h}h {m}m {s}s.")
 
 
     @loop(seconds=60)
