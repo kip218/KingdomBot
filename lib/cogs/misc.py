@@ -119,7 +119,7 @@ class Misc(Cog):
         await ctx.send(f"{ctx.author.mention} I will remind you of `{task}` after {d}d {h}h {m}m {s}s.")
 
 
-    @loop(seconds=60)
+    @loop(seconds=1)
     async def check_reminders(self):
         reminders = db.get_reminders(datetime.utcnow())
         for reminder in reminders:
