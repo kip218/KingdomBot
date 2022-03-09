@@ -50,6 +50,7 @@ class Bot(BotBase):
         intents = Intents.default()
         intents.members = True
         intents.presences = True
+        intents.guilds = True
 
         db.autosave(self.scheduler)
         print("running bot...")

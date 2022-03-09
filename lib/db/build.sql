@@ -20,5 +20,6 @@ CREATE TABLe IF NOT EXISTS reminders (
     ReminderID bigint PRIMARY KEY,
     Task text,
     ReminderTime timestamp,
-    UserID bigint
+    UserID bigint,
+    ChannelID bigint
     );

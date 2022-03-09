@@ -1,7 +1,7 @@
 from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord.ext.tasks import loop
-from discord import Embed
+from discord import Embed, errors
 from random import randint
 from udpy import UrbanClient
 from datetime import datetime, timedelta
@@ -115,7 +115,7 @@ class Misc(Cog):
         reminderTime = now + timedelta(seconds=seconds)
         reminderID = int(str(int(now.timestamp()))[-9:] + str(int(reminderTime.timestamp()))[-9:])
 
-        db.add_reminder(reminderID, task, reminderTime, ctx.author.id)
+        db.add_reminder(reminderID, task, reminderTime, ctx.author.id, ctx.channel.id)
         await ctx.send(f"{ctx.author.mention} I will remind you of `{task}` after {d}d {h}h {m}m {s}s.")
 
 
@@ -123,12 +123,14 @@ class Misc(Cog):
     async def check_reminders(self):
         reminders = db.get_reminders(datetime.utcnow())
         for reminder in reminders:
-            reminderID, task, userID = reminder[0], reminder[1], reminder[2]
-            user = await self.bot.fetch_user(userID)
-            if user.dm_channel is None:
-                await user.create_dm()
-            await user.dm_channel.send(f"**Reminder:**\n`{task}`")
-            db.remove_reminder(reminderID)
+            try:
+                reminderID, task, userID, channelID = reminder[0], reminder[1], reminder[2], reminder[3]
+                user = await self.bot.fetch_user(userID)
+                channel = self.bot.get_channel(channelID)
+                db.remove_reminder(reminderID)
+                await channel.send(f"{user.mention}\n**Reminder:**\n`{task}`")
+            except:
+                print("Error in checking reminders")
 
 
     @command()
