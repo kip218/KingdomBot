@@ -6,6 +6,7 @@ from asyncio import sleep
 from ..db import db
 from ..war import *
 from .. import units
+
 UNITS = units.MAP
 
 
@@ -13,70 +14,77 @@ class Pvp(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-    @command(aliases=['lb'])
+    @command(aliases=["lb"])
     async def leaderboard(self, ctx):
-        '''
+        """
         Show Kingdom leaderboard for the server.
-        '''
+        """
         guild_members = ctx.guild.members
         id_lst = [member.id for member in guild_members]
         lb_lst = []
         for userID in id_lst:
-            user_stats = db.record("SELECT Username, Balance, KingdomName\
-                                   FROM users WHERE UserID = %s", userID)
+            user_stats = db.record(
+                "SELECT Username, Balance, KingdomName\
+                                   FROM users WHERE UserID = %s",
+                userID,
+            )
             if user_stats is not None:
                 username = user_stats[0]
                 balance = user_stats[1]
                 kingdom_name = user_stats[2]
-                lb_lst.append({'username':username, 'balance':balance, 'kingdom_name':kingdom_name})
+                lb_lst.append(
+                    {
+                        "username": username,
+                        "balance": balance,
+                        "kingdom_name": kingdom_name,
+                    }
+                )
                 if len(lb_lst) == 10:
                     break
-        #sorting leaderboard by balance
-        lb_lst = sorted(lb_lst, key=lambda k: k['balance'], reverse=True)
+        # sorting leaderboard by balance
+        lb_lst = sorted(lb_lst, key=lambda k: k["balance"], reverse=True)
 
-        desc = ''
+        desc = ""
         place = 1
         for user in lb_lst:
-            username = user['username']
-            balance = user['balance']
-            kingdom_name = user['kingdom_name']
+            username = user["username"]
+            balance = user["balance"]
+            kingdom_name = user["kingdom_name"]
             desc += f"**{place}. {username}'s {kingdom_name}** - {balance} coins\n"
             place += 1
-        embed = Embed(title='Kingdom Leaderboard', description=desc)\
-            .set_footer(text=f"Leaderboard for {ctx.guild.name}",
-                        icon_url=ctx.guild.icon_url)
+        embed = Embed(title="Kingdom Leaderboard", description=desc).set_footer(
+            text=f"Leaderboard for {ctx.guild.name}", icon_url=ctx.guild.icon_url
+        )
         await ctx.send(embed=embed)
-
 
     @command()
     async def army(self, ctx):
-        '''
+        """
         Shows your army.
-        '''
+        """
         userID = ctx.author.id
         army = db.get_army(userID)
         if army is None:
-            await ctx.send('Your army is empty!')
+            await ctx.send("Your army is empty!")
             return
         army_size = db.get_armysize(userID)
 
-        desc = ''
+        desc = ""
         for unit in army:
             unit_name = unit[0]
             unit_count = int(unit[1])
             unit_emoji = UNITS[unit_name].get_emoji()
-            desc += f'{unit_emoji}`{unit_name}`       x {unit_count}\n'
-        embed = Embed(title=f"{ctx.author.name}'s Army", description=desc)\
-                    .set_footer(text=f"Army Capacity: {army_size}/10")
+            desc += f"{unit_emoji}`{unit_name}`       x {unit_count}\n"
+        embed = Embed(title=f"{ctx.author.name}'s Army", description=desc).set_footer(
+            text=f"Army Capacity: {army_size}/10"
+        )
         await ctx.send(embed=embed)
 
-
-    @command(aliases=['attack','invade'])
+    @command(aliases=["attack", "invade"])
     async def raid(self, ctx, user):
-        '''
+        """
         Raid another user's Kingdom.
-        '''
+        """
         if len(ctx.message.mentions) == 0:
             await ctx.send("You must mention a user to raid!")
             return
@@ -93,7 +101,7 @@ class Pvp(Cog):
             return
 
         def get_embed(i):
-            title = f'{attacker.name} VS {defender.name}'
+            title = f"{attacker.name} VS {defender.name}"
             embed = Embed(title=title)
             embed.add_field(name=f"{attacker.name}'s Army", value=army1.army_state())
             embed.add_field(name=f"{defender.name}'s Army", value=army2.army_state())
@@ -127,12 +135,9 @@ class Pvp(Cog):
         elif army2:
             await ctx.send("Raid failed! You were destroyed by the opposing army!")
 
-
-
-
     @Cog.listener()
     async def on_ready(self):
-        print(self.__class__.__name__, 'cog ready')
+        print(self.__class__.__name__, "cog ready")
 
 
 def setup(bot):

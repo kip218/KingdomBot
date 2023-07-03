@@ -3,14 +3,14 @@ from psycopg2 import connect
 from apscheduler.triggers.interval import IntervalTrigger
 from os.path import isfile
 
-#importing database_url
-sys.path.append('../../')
+# importing database_url
+sys.path.append("../../")
 from settings import DATABASE_URL
 
-BUILD_PATH = './lib/db/build.sql'
+BUILD_PATH = "./lib/db/build.sql"
 
-#initiate database connection
-conn = connect(DATABASE_URL, sslmode='require')
+# initiate database connection
+conn = connect(DATABASE_URL, sslmode="require")
 cur = conn.cursor()
 
 
@@ -18,6 +18,7 @@ def with_commit(func):
     def inner(*args, **kwargs):
         func(*args, **kwargs)
         commit()
+
     return inner
 
 
@@ -39,48 +40,54 @@ def close():
     conn.close()
 
 
-#fetch field
+# fetch field
 def field(command, *values):
     cur.execute(command, tuple(values))
     if (fetch := cur.fetchone()) is not None:
         return fetch[0]
 
 
-#fetch row
+# fetch row
 def record(command, *values):
     cur.execute(command, tuple(values))
     return cur.fetchone()
 
 
-#fetch rows
+# fetch rows
 def records(command, *values):
     cur.execute(command, tuple(values))
     return cur.fetchall()
 
 
-#fetch column
+# fetch column
 def column(command, *values):
     cur.execute(command, tuple(values))
     return [item[0] for item in cur.fetchall()]
 
 
-#execute SQL command
+# execute SQL command
 def execute(command, *values):
     cur.execute(command, tuple(values))
 
 
-#execute SQL script (for building database)
+# execute SQL script (for building database)
 def scriptexec(path):
-    with open(path, 'r', encoding='utf-8') as script:
+    with open(path, "r", encoding="utf-8") as script:
         cur.execute(script.read())
 
 
 """
 Specific commands for users
 """
+
+
 def add_user(userID, username):
-    execute("INSERT INTO users (UserID, Username) VALUES (%s, %s) ON CONFLICT (UserID) DO NOTHING;",
-                userID, username)
+    execute(
+        "INSERT INTO users (UserID, Username) VALUES (%s, %s) ON CONFLICT (UserID) DO NOTHING;",
+        userID,
+        username,
+    )
+
 
 def user_exists(userID):
     return bool(record("SELECT UserID FROM users WHERE UserID = %s", userID))
@@ -99,7 +106,9 @@ def deduct_balance(userID, amount):
     if curr_bal < amount:
         return False
     else:
-        execute("UPDATE users SET Balance = Balance - %s WHERE UserID = %s", amount, userID)
+        execute(
+            "UPDATE users SET Balance = Balance - %s WHERE UserID = %s", amount, userID
+        )
 
 
 def change_kingdom_name(userID, kingdom_name):
@@ -107,7 +116,9 @@ def change_kingdom_name(userID, kingdom_name):
 
 
 def change_kingdom_emblem(userID, kingdom_emblem):
-    execute("UPDATE users SET KingdomEmblem = %s WHERE UserID = %s", kingdom_emblem, userID)
+    execute(
+        "UPDATE users SET KingdomEmblem = %s WHERE UserID = %s", kingdom_emblem, userID
+    )
 
 
 def get_army(userID):
@@ -137,7 +148,7 @@ def get_unit(userID, unit_name):
 def add_unit(userID, unit_to_add):
     army = get_army(userID)
     if army is None:
-        army = [[unit_to_add, '1']]
+        army = [[unit_to_add, "1"]]
         execute("UPDATE users SET Army = %s WHERE UserID = %s", army, userID)
         return
     unit_name, unit_count = get_unit(userID, unit_to_add)
@@ -146,7 +157,7 @@ def add_unit(userID, unit_to_add):
             if unit_name == unit[0]:
                 unit[1] = str(int(unit[1]) + 1)
     else:
-        army.append([unit_to_add, '1'])
+        army.append([unit_to_add, "1"])
     execute("UPDATE users SET Army = %s WHERE UserID = %s", army, userID)
 
 
@@ -160,12 +171,21 @@ def reset_army(userID):
 
 
 def add_reminder(reminderID, task, reminderTime, userID, channelID):
-    execute("INSERT INTO Reminders (ReminderID, Task, ReminderTime, UserID, ChannelID) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (ReminderID) DO NOTHING;",
-                reminderID, task, reminderTime, userID, channelID)
+    execute(
+        "INSERT INTO Reminders (ReminderID, Task, ReminderTime, UserID, ChannelID) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (ReminderID) DO NOTHING;",
+        reminderID,
+        task,
+        reminderTime,
+        userID,
+        channelID,
+    )
 
 
 def get_reminders(now):
-    return records("SELECT ReminderID, Task, UserID, ChannelID FROM Reminders WHERE ReminderTime::timestamptz <= %s::timestamptz", now)
+    return records(
+        "SELECT ReminderID, Task, UserID, ChannelID FROM Reminders WHERE ReminderTime::timestamptz <= %s::timestamptz",
+        now,
+    )
 
 
 def remove_reminder(reminderID):
@@ -175,9 +195,13 @@ def remove_reminder(reminderID):
 """
 Specific commands for servers
 """
+
+
 def add_server(serverID):
-    execute("INSERT INTO servers (ServerID) VALUES (%s) ON CONFLICT (ServerID) DO NOTHING;",
-                serverID)
+    execute(
+        "INSERT INTO servers (ServerID) VALUES (%s) ON CONFLICT (ServerID) DO NOTHING;",
+        serverID,
+    )
 
 
 def remove_server(serverID):

@@ -1,4 +1,4 @@
-class Unit():
+class Unit:
     def __init__(self):
         self.name
         self.emoji

@@ -1,10 +1,11 @@
 from copy import deepcopy
 from random import choice
 from .. import units
+
 UNITS = units.MAP
 
 
-class Army():
+class Army:
     def __init__(self, army):
         self.army = army
         self.full_army = []
@@ -16,16 +17,16 @@ class Army():
                     self.full_army.append(deepcopy(UNITS[unit_name]))
 
     def list_army(self):
-        res = ''
+        res = ""
         for unit in self.army:
             unit_name = unit[0]
             unit_count = int(unit[1])
             unit_emoji = UNITS[unit_name].get_emoji()
-            res += f'{unit_emoji}`{unit_name}`   x {unit_count}\n'
+            res += f"{unit_emoji}`{unit_name}`   x {unit_count}\n"
         return res
 
     def army_state(self):
-        res = ''
+        res = ""
         n = 0
         for unit in self.full_army:
             if len(res) > 400:
@@ -35,12 +36,12 @@ class Army():
                 emoji = unit.get_emoji()
                 health = unit.get_health()
                 max_hp = unit.get_max_hp()
-                res += f'{emoji}`{name}`   {health}/{max_hp}HP\n'
+                res += f"{emoji}`{name}`   {health}/{max_hp}HP\n"
         if res:
-            res += f'*+ {n} more units...*'
+            res += f"*+ {n} more units...*"
             return res
         else:
-            return ':skull::skull::skull::skull::skull:'
+            return ":skull::skull::skull::skull::skull:"
 
     def get_full_army(self):
         return self.full_army
@@ -49,7 +50,7 @@ class Army():
         return not bool(self.full_army)
 
     def remove_dead(self):
-        for i in range(len(self.full_army)-1,-1,-1):
+        for i in range(len(self.full_army) - 1, -1, -1):
             unit = self.full_army[i]
             if unit.get_health() <= 0:
                 self.full_army.remove(unit)

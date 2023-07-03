@@ -1,38 +1,38 @@
 from random import choices, randint
 
-class MontyHall():
+
+class MontyHall:
     def __init__(self):
         self.options = {
-                    1:{'n':1, 'is_open':False, 'emote':':one:', 'is_coin':False},
-                    2:{'n':2, 'is_open':False, 'emote':':two:', 'is_coin':False},
-                    3:{'n':3, 'is_open':False, 'emote':':three:', 'is_coin':False}
-                    }
+            1: {"n": 1, "is_open": False, "emote": ":one:", "is_coin": False},
+            2: {"n": 2, "is_open": False, "emote": ":two:", "is_coin": False},
+            3: {"n": 3, "is_open": False, "emote": ":three:", "is_coin": False},
+        }
         self.coin = choices((1, 2, 3))[0]
-        self.options[self.coin]['is_coin'] = True
+        self.options[self.coin]["is_coin"] = True
         self.guess = None
 
-        #emotes
-        self.coin_emote = ':coin:'
-        self.x_emote = ':x:'
-        self.package_emote = ':package:'
-        self.arrow_emote = ':arrow_down:'
+        # emotes
+        self.coin_emote = ":coin:"
+        self.x_emote = ":x:"
+        self.package_emote = ":package:"
+        self.arrow_emote = ":arrow_down:"
 
         self.payment = randint(10, 20)
 
-
     def display(self):
-        res = ''
+        res = ""
         for k in sorted(self.options):
             pkg = self.options[k]
             if k == self.guess:
                 res += self.arrow_emote
             else:
-                res += pkg['emote']
-        res += '\n'
+                res += pkg["emote"]
+        res += "\n"
         for k in sorted(self.options):
             pkg = self.options[k]
-            if pkg['is_open']:
-                if pkg['is_coin']:
+            if pkg["is_open"]:
+                if pkg["is_coin"]:
                     res += self.coin_emote
                 else:
                     res += self.x_emote
@@ -40,10 +40,8 @@ class MontyHall():
                 res += self.package_emote
         return res
 
-
     def take_guess(self, n):
         self.guess = n
-
 
     def reveal_pkg(self):
         lst = [1, 2, 3]
@@ -51,26 +49,23 @@ class MontyHall():
         if self.guess in lst:
             lst.remove(self.guess)
         rand_n = choices(lst)[0]
-        self.options[rand_n]['is_open'] = True
+        self.options[rand_n]["is_open"] = True
         return rand_n
-
 
     def switch(self, switch):
         if self.guess is None:
             return
-        if switch == 'n':
+        if switch == "n":
             return
-        if switch == 'y':
+        if switch == "y":
             old_guess = self.guess
             for pkg in self.options.values():
-                if not pkg['is_open'] and pkg['n'] != old_guess:
-                    self.guess = pkg['n']
-
+                if not pkg["is_open"] and pkg["n"] != old_guess:
+                    self.guess = pkg["n"]
 
     def reveal_all(self):
         for pkg in self.options.values():
-            pkg['is_open'] = True
-
+            pkg["is_open"] = True
 
     def get_payment(self):
         return self.payment
